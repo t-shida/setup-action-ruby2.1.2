@@ -44,18 +44,18 @@ jobs:
         if: steps.cache_openssl.outputs.cache-hit != 'true'
         run: |
           mkdir -p ~/.src/openssl
-          cd ~/.src/openssl          
+          cd ~/.src/openssl
           curl https://www.openssl.org/source/openssl-1.0.2l.tar.gz | tar xz && cd openssl-1.0.2l && sudo ./config --prefix=/opt/openssl shared && sudo make && sudo make install 
           sudo wget -O /opt/openssl/ssl/cert.pem http://curl.haxx.se/ca/cacert.pem
           /opt/openssl/bin/openssl version
-          
+
       - name: Cache Rbenv
         uses: actions/cache@v1
         id: cache_rbenv
         with:
           path: /home/runner/.rbenv
           key: ruby-2.1.2
-          
+
       - name: Install Rbenv
         if: steps.cache_rbenv.outputs.cache-hit != 'true'
         run: |
@@ -67,14 +67,10 @@ jobs:
           RUBY_CONFIGURE_OPTS="--with-openssl-dir=/opt/openssl" rbenv install 2.1.2        
           # ruby -ropenssl -e'puts OpenSSL::OPENSSL_VERSION'
           # ruby -ropenssl -e "p OpenSSL::X509::DEFAULT_CERT_FILE"
-          
-      - name: Setup Ruby version
-        if: steps.cache_rbenv.outputs.cache-hit == 'true'
-        run: |
           echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
           echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
           source ~/.bash_profile
           rbenv global 2.1.2
           rbenv rehash
-          ruby -v     
+          ruby -v
 
